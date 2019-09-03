@@ -1,27 +1,9 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include <Windows.h>
 #include <iostream>
 #include <sstream>
 #include <cmath>
-
-#define DBOUT( s )            \
-{                             \
-   std::wostringstream os_;    \
-   os_ << s;                   \
-   OutputDebugStringW( os_.str().c_str() );  \
-}
 
 AudioProcessorValueTreeState::ParameterLayout AnotherDelayAudioProcessor::createParameterLayout()
 {
@@ -64,21 +46,11 @@ AudioProcessorValueTreeState::ParameterLayout AnotherDelayAudioProcessor::create
 	return { params.begin(), params.end() };
 }
 
-//==============================================================================
 AnotherDelayAudioProcessor::AnotherDelayAudioProcessor()
-	: state(*this, nullptr, "PARAMETERS", createParameterLayout()),
-
-#ifndef JucePlugin_PreferredChannelConfigurations
-	 AudioProcessor(BusesProperties()
-		#if ! JucePlugin_IsMidiEffect
-		#if ! JucePlugin_IsSynth
-			.withInput("Input", AudioChannelSet::stereo(), true)
-		#endif
-			.withOutput("Output", AudioChannelSet::stereo(), true)
-		#endif
-		)
-#endif
-
+    : AudioProcessor(BusesProperties()
+        .withInput("Input", AudioChannelSet::stereo(), true)
+        .withOutput("Output", AudioChannelSet::stereo(), true))
+    , state(*this, nullptr, "PARAMETERS", createParameterLayout())
 {
 	addParameterListeners();
 }
@@ -88,7 +60,6 @@ AnotherDelayAudioProcessor::~AnotherDelayAudioProcessor()
 
 }
 
-//==============================================================================
 const String AnotherDelayAudioProcessor::getName() const
 {
     return JucePlugin_Name;
@@ -150,7 +121,6 @@ void AnotherDelayAudioProcessor::changeProgramName (int index, const String& new
 {
 }
 
-//==============================================================================
 void AnotherDelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
@@ -212,7 +182,6 @@ void AnotherDelayAudioProcessor::addParameterListeners()
 	state.addParameterListener(Parameters::damping.toString(), this);
 	state.addParameterListener(Parameters::width.toString(), this);
 }
-
 
 void AnotherDelayAudioProcessor::parameterChanged(const String& parameterID, float newValue)
 {
@@ -307,7 +276,6 @@ void AnotherDelayAudioProcessor::updateProcessing()
 	reverbRParameters.damping = *damping;
 	reverbRParameters.width = *width;
 	reverbR.setParameters(reverbRParameters);
-
 }
 
 void AnotherDelayAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -331,10 +299,10 @@ void AnotherDelayAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBu
 		4. copy delay buffer (89224) into output buffer (512) */
 
 		const float* bufferReadPtr = buffer.getReadPointer(channel);
-		const float* delayBufferReadPtr = delayBuffer.getReadPointer(channel);
-		const float* wetBufferReadPtr = wetBuffer.getReadPointer(channel);
+		//const float* delayBufferReadPtr = delayBuffer.getReadPointer(channel);
+		//const float* wetBufferReadPtr = wetBuffer.getReadPointer(channel);
 		float* bufferWritePtr = buffer.getWritePointer(channel);
-		float* delayBufferWritePtr = delayBuffer.getWritePointer(channel);
+		//float* delayBufferWritePtr = delayBuffer.getWritePointer(channel);
 		float* wetBufferWritePtr = wetBuffer.getWritePointer(channel);
 
 		// fill delayBuffer
@@ -357,11 +325,11 @@ void AnotherDelayAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBu
 
 			int k;
 			float delayTimeInSamples;
-			double bpm;
+			double bpm = 120.0;
 
 			AudioPlayHead* const ph = getPlayHead();
 			AudioPlayHead::CurrentPositionInfo result;
-			if (ph != nullptr && ph->getCurrentPosition(result))
+			if (ph && ph->getCurrentPosition(result))
 				bpm = result.bpm;
 
 			/* send 1 unit of delay from delay buffer to output buffer*/
@@ -438,8 +406,6 @@ void AnotherDelayAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBu
 	}
 }
 
-//==============================================================================
-
 float AnotherDelayAudioProcessor::calcWriteValue(int channel, AudioBuffer<float>& buffer, int k, int i, int delayBufferLength, float delayTimeInSamples, float mod)
 {
 	float kk = (float)k;
@@ -455,7 +421,7 @@ float AnotherDelayAudioProcessor::calcWriteValue(int channel, AudioBuffer<float>
 	return interpolate(floorValue0, floorValue, floorValue1, floorValue2, delayTimeInSamples, mod);
 }
 
-/* delay buffer is filled with contents from the output buffer*/
+// delay buffer is filled with contents from the output buffer
 void AnotherDelayAudioProcessor::fillBuffer(int channel, const int bufferLength, const int delayBufferLength, const float* bufferReadPtr,
 	int dBWritePosition, float startGain, float endGain)
 {
@@ -471,7 +437,7 @@ void AnotherDelayAudioProcessor::fillBuffer(int channel, const int bufferLength,
 	}
 }
 
-/* time shift is done here from delay buffer to output buffer*/
+// time shift is done here from delay buffer to output buffer
 void AnotherDelayAudioProcessor::fetchDelay(AudioBuffer<float>& buffer, int channel, const int feedbackBufferLength,
 	const int delayBufferLength, const float* feedbackBufferPtr, const float* delayBufferPtr, float startGain, float endGain)
 {
@@ -490,7 +456,7 @@ void AnotherDelayAudioProcessor::fetchDelay(AudioBuffer<float>& buffer, int chan
 	}
 }
 
-/* send feedback from output buffer to delay buffer*/
+// send feedback from output buffer to delay buffer
 void AnotherDelayAudioProcessor::sendFeedback(AudioBuffer<float>& buffer, int channel, const int feedbackBufferLength, const int delayBufferLength, float* feedbackBufferWritePtr,
 	float startGain, float endGain)
 {
@@ -505,7 +471,6 @@ void AnotherDelayAudioProcessor::sendFeedback(AudioBuffer<float>& buffer, int ch
 		delayBuffer.addFromWithRamp(channel, 0, feedbackBufferWritePtr, feedbackBufferLength - bufferRemaining, midGain, endGain);
 	}
 }
-
 
 AudioProcessorValueTreeState& AnotherDelayAudioProcessor::getValueTreeState()
 {
@@ -532,7 +497,7 @@ void AnotherDelayAudioProcessor::updateFilter()
 	hiPassFilter0.setCoefficients(IIRCoefficients::makeHighPass(44100.0f, *highpass));
 	hiPassFilter1.setCoefficients(IIRCoefficients::makeHighPass(44100.0f, *highpass));
 }
-//==============================================================================
+
 void AnotherDelayAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
 	MemoryOutputStream stream(destData, false);
@@ -552,7 +517,7 @@ double AnotherDelayAudioProcessor::updateOscillator(int channel)
 	auto target = 0.0;
 	auto flutterDepth = *flutterdepth * 0.5;
 	auto wowDepth = *wowdepth * 0.5;
-	auto totalDepth = flutterDepth + wowDepth;
+	//auto totalDepth = flutterDepth + wowDepth;
 	auto followSpeed = 1.0;
 
 	if (channel == 0)
@@ -573,11 +538,11 @@ double AnotherDelayAudioProcessor::updateOscillator(int channel)
 		}
 		target += wowDepth * oscWowLValue;
 		
-		if (flutterDepth && wowDepth == 0.0)
-			auto followSpeed = 10.0;
-		else
-			auto followSpeed = 1.0;
-	
+//        if (flutterDepth && wowDepth == 0.0)
+//            auto followSpeed = 10.0;
+//        else
+//            auto followSpeed = 1.0;
+
 		oscLPosition += (target - oscLPosition) * followSpeed * (double)(1.0 / mSampleRate);
 		mod = oscLPosition * (double)mSampleRate;
 	}
@@ -599,10 +564,10 @@ double AnotherDelayAudioProcessor::updateOscillator(int channel)
 		}
 		target += wowDepth * oscWowRValue;
 
-		if (flutterDepth && wowDepth == 0.0)
-			auto followSpeed = 10.0;
-		else
-			auto followSpeed = 1.0;
+//        if (flutterDepth && wowDepth == 0.0)
+//            auto followSpeed = 10.0;
+//        else
+//            auto followSpeed = 1.0;
 
 		oscRPosition += (target - oscRPosition) * followSpeed * (double)(1.0 / mSampleRate);
 		mod = (oscRPosition * (double)mSampleRate);
@@ -617,17 +582,8 @@ double AnotherDelayAudioProcessor::updateOscillator(int channel)
 }
 
 
-
-//==============================================================================
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new AnotherDelayAudioProcessor();
 }
-
-
-/*
-
-
-
-*/

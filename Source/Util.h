@@ -1,23 +1,8 @@
-/*
-  ==============================================================================
+#pragma once
 
-    Util.h
-    Created: 25 Oct 2018 8:06:19pm
-    Author:  daryl
-
-  ==============================================================================
-*/
 #include <string>
-
 #include <iostream>
 #include <sstream>
-#pragma once
-#define DBOUT( s )            \
-{                             \
-   std::wostringstream os_;    \
-   os_ << s;                   \
-   OutputDebugStringW( os_.str().c_str() );  \
-}
 
 inline float linInterp(float x1, float x2, float y1, float y2, float x)
 {

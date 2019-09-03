@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="SE2fXU" name="Another Delay" projectType="audioplug" jucerVersion="5.4.4"
-              pluginFormats="buildVST,buildVST3">
+              pluginFormats="buildAU,buildVST,buildVST3">
   <MAINGROUP id="gIwvAM" name="Another Delay">
     <GROUP id="{02F8A589-1A1B-1BCE-06EA-1EDCB6BE852D}" name="Source">
       <FILE id="VvC41n" name="Util.h" compile="0" resource="0" file="Source/Util.h"/>
@@ -87,6 +87,7 @@
   </MODULES>
   <LIVE_SETTINGS>
     <WINDOWS/>
+    <OSX/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0"/>
 </JUCERPROJECT>

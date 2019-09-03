@@ -1,17 +1,4 @@
-/*
-  ==============================================================================
-
-    Oscillator.h
-    Created: 19 Oct 2018 9:56:31am
-    Author:  daryl
-
-  ==============================================================================
-*/
-
 #pragma once
-
-#ifndef OSCILLATOR_H_INCLUDED
-#define OSCILLATOR_H_INCLUDED
 
 #include <iostream>
 #include <math.h>
@@ -44,5 +31,3 @@ public:
 		updateIncrement();
 	};
 };
-
-#endif  // OSCILLATOR_H_INCLUDED

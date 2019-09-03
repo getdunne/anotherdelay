@@ -1,23 +1,9 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
-#include <map>;
+#include "JuceHeader.h"
+#include <map>
 #include "Oscillator.h"
 #include "Util.h"
-
-//==============================================================================
-/**
-*/
 
 namespace Parameters
 {
@@ -66,14 +52,11 @@ namespace Parameters
 
 class AnotherDelayAudioProcessor : public AudioProcessor,
 								   private AudioProcessorValueTreeState::Listener
-								   
 {
 public:
-	//==============================================================================
 	AnotherDelayAudioProcessor();
 	~AnotherDelayAudioProcessor();
 
-	//==============================================================================
 	void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 	void releaseResources() override;
 
@@ -83,11 +66,9 @@ public:
 
 	void processBlock(AudioBuffer<float>&, MidiBuffer&) override;
 
-	//==============================================================================
 	AudioProcessorEditor* createEditor() override;
 	bool hasEditor() const override;
 
-	//==============================================================================
 	const String getName() const override;
 
 	bool acceptsMidi() const override;
@@ -95,20 +76,18 @@ public:
 	bool isMidiEffect() const override;
 	double getTailLengthSeconds() const override;
 
-	//==============================================================================
 	int getNumPrograms() override;
 	int getCurrentProgram() override;
 	void setCurrentProgram(int index) override;
 	const String getProgramName(int index) override;
 	void changeProgramName(int index, const String& newName) override;
 
-	//==============================================================================
 	void getStateInformation(MemoryBlock& destData) override;
 	void setStateInformation(const void* data, int sizeInBytes) override;
 
 	AudioProcessorValueTreeState& getValueTreeState();
 
-	void parameterChanged(const String & parameterID, float newValue);
+	void parameterChanged(const String & parameterID, float newValue) override;
 
 	void fillBuffer(int channel, const int bufferLength, const int delayBufferLength, const float* bufferReadPtr,
 		int dBWritePosition, float startGain, float endGain);
@@ -119,16 +98,15 @@ public:
 	void sendFeedback(AudioBuffer<float>& buffer, int channel, const int feedbackBufferLength, const int delayBufferLength, float* feedbackBufferWrite,
 		float startGain, float endGain);
 
-	void AnotherDelayAudioProcessor::updateFilter();
+	void updateFilter();
 
-	float AnotherDelayAudioProcessor::calcWriteValue(int channel, AudioBuffer<float>& buffer, int k, int i, int delayBufferLength, float delayTimeInSamples, float mod);
+	float calcWriteValue(int channel, AudioBuffer<float>& buffer, int k, int i, int delayBufferLength, float delayTimeInSamples, float mod);
 
-	double AnotherDelayAudioProcessor::updateOscillator(int channel);
+	double updateOscillator(int channel);
 
 	void updateProcessing();
 
 private:
-
 	void addParameterListeners();
 
 	AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -189,6 +167,5 @@ private:
 
 	delayEngine theDelayEngine;
 
-	//==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnotherDelayAudioProcessor)
 };
